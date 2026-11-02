@@ -1,0 +1,161 @@
+
+{% extends "base.html" %}
+
+{% block title %}Fuel Analysis - FuelTrack{% endblock %}
+
+{% block content %}
+
+<div class="mb-4">
+    <h2 class="page-heading">Fuel Analysis</h2>
+    <p class="page-subtitle">Understand your fuel consumption and expenses.</p>
+</div>
+
+{% set total_fuel = namespace(value=0) %}
+{% set total_expense = namespace(value=0) %}
+{% set total_distance = namespace(value=0) %}
+
+{% for record in records %}
+    {% set total_fuel.value = total_fuel.value + record.fuel_liters %}
+    {% set total_expense.value = total_expense.value + record.fuel_price %}
+    {% set total_distance.value = total_distance.value + record.distance %}
+{% endfor %}
+
+<div class="row g-4 mb-4">
+
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="bi bi-fuel-pump"></i></div>
+            <p>Total Fuel Consumed</p>
+            <h3>{{ "%.2f"|format(total_fuel.value) }} L</h3>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="bi bi-currency-rupee"></i></div>
+            <p>Total Fuel Expenses</p>
+            <h3>₹{{ "%.2f"|format(total_expense.value) }}</h3>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="bi bi-signpost"></i></div>
+            <p>Total Distance</p>
+            <h3>{{ "%.2f"|format(total_distance.value) }} KM</h3>
+        </div>
+    </div>
+
+</div>
+
+<div class="row g-4">
+
+    <div class="col-lg-6">
+        <div class="content-card">
+            <h5 class="fw-bold mb-4">Monthly Fuel Consumption</h5>
+            <canvas id="fuelChart"></canvas>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="content-card">
+            <h5 class="fw-bold mb-4">Monthly Fuel Expenses</h5>
+            <canvas id="expenseChart"></canvas>
+        </div>
+    </div>
+
+</div>
+
+<div class="content-card mt-4">
+    <h5 class="fw-bold mb-4">Monthly Analysis Details</h5>
+
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Month</th>
+                    <th>Fuel Consumed (L)</th>
+                    <th>Expenses (₹)</th>
+                    <th>Distance (KM)</th>
+                    <th>Average Mileage</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for month, data in monthly_data.items() %}
+                <tr>
+                    <td>{{ month }}</td>
+                    <td>{{ "%.2f"|format(data.fuel) }}</td>
+                    <td>₹{{ "%.2f"|format(data.expense) }}</td>
+                    <td>{{ "%.2f"|format(data.distance) }}</td>
+                    <td>
+                        {% if data.fuel > 0 %}
+                        {{ "%.2f"|format(data.distance / data.fuel) }} km/L
+                        {% else %}
+                        0 km/L
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="text-center text-secondary py-4">
+                        No analysis data available. Add fuel records first.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+const monthlyData = {{ monthly_data | tojson }};
+
+const months = Object.keys(monthlyData);
+const fuelValues = months.map(month => monthlyData[month].fuel);
+const expenseValues = months.map(month => monthlyData[month].expense);
+
+new Chart(document.getElementById('fuelChart'), {
+    type: 'bar',
+    data: {
+        labels: months,
+        datasets: [{
+            label: 'Fuel (Litres)',
+            data: fuelValues,
+            backgroundColor: '#3b82f6',
+            borderRadius: 7
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: { beginAtZero: true }
+        }
+    }
+});
+
+new Chart(document.getElementById('expenseChart'), {
+    type: 'line',
+    data: {
+        labels: months,
+        datasets: [{
+            label: 'Expenses (₹)',
+            data: expenseValues,
+            borderColor: '#16a34a',
+            backgroundColor: 'rgba(22,163,74,0.12)',
+            fill: true,
+            tension: 0.35
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: { beginAtZero: true }
+        }
+    }
+});
+</script>
+
+{% endblock %}
