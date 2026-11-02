@@ -1,0 +1,53 @@
+
+{% extends "base.html" %}
+
+{% block title %}Login - FuelTrack{% endblock %}
+
+{% block auth_content %}
+
+<div class="auth-wrapper">
+    <div class="auth-card">
+
+        <div class="text-center mb-4">
+            <i class="bi bi-fuel-pump-fill auth-icon"></i>
+            <h2 class="fw-bold mt-3">Welcome Back</h2>
+            <p class="text-secondary">Login to your FuelTrack account</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="POST">
+
+            <label class="form-label">Email Address</label>
+            <input type="email" name="email" class="form-control mb-3"
+                   placeholder="Enter your email" required>
+
+            <label class="form-label">Password</label>
+            <input type="password" name="password" class="form-control mb-4"
+                   placeholder="Enter your password" required>
+
+            <button type="submit" class="btn btn-primary w-100">
+                Login
+            </button>
+
+        </form>
+
+        <p class="text-center mt-4">
+            Don't have an account?
+            <a href="{{ url_for('register') }}">Register</a>
+        </p>
+
+        <div class="text-center">
+            <a href="/" class="text-secondary text-decoration-none">
+                Back to Home
+            </a>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

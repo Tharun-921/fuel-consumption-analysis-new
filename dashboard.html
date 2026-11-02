@@ -1,0 +1,126 @@
+
+{% extends "base.html" %}
+
+{% block title %}Dashboard - FuelTrack{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+    <div>
+        <h2 class="page-heading">Dashboard Overview</h2>
+        <p class="page-subtitle">Welcome back, {{ current_user.username }}! Here's your fuel summary.</p>
+    </div>
+    <a href="{{ url_for('fuel_records') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Add Fuel Record
+    </a>
+</div>
+
+<div class="row g-4">
+
+    <div class="col-md-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="bi bi-truck"></i></div>
+            <p>Total Vehicles</p>
+            <h3>{{ vehicles }}</h3>
+            <small class="text-secondary">Registered vehicles</small>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="bi bi-fuel-pump"></i></div>
+            <p>Total Fuel</p>
+            <h3>{{ total_fuel }} L</h3>
+            <small class="text-secondary">Fuel consumed</small>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="bi bi-currency-rupee"></i></div>
+            <p>Total Expenses</p>
+            <h3>₹{{ total_expense }}</h3>
+            <small class="text-secondary">Fuel expenditure</small>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="bi bi-speedometer2"></i></div>
+            <p>Average Mileage</p>
+            <h3>{{ average_mileage }} km/L</h3>
+            <small class="text-secondary">Average efficiency</small>
+        </div>
+    </div>
+
+</div>
+
+<div class="row g-4 mt-2">
+
+    <div class="col-lg-8">
+        <div class="content-card">
+            <h5 class="fw-bold mb-4">Recent Fuel Records</h5>
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Vehicle</th>
+                            <th>Date</th>
+                            <th>Fuel</th>
+                            <th>Expense</th>
+                            <th>Mileage</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for record in recent_records %}
+                        <tr>
+                            <td>{{ record.vehicle.vehicle_name }}</td>
+                            <td>{{ record.fuel_date.strftime('%d-%m-%Y') }}</td>
+                            <td>{{ record.fuel_liters }} L</td>
+                            <td>₹{{ record.fuel_price }}</td>
+                            <td>{{ "%.2f"|format(record.mileage) }} km/L</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center text-secondary py-4">
+                                No fuel records found. Start by adding your first record.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <a href="{{ url_for('fuel_records') }}" class="text-primary text-decoration-none">
+                View all fuel records →
+            </a>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="content-card h-100">
+            <h5 class="fw-bold mb-4">Quick Actions</h5>
+
+            <a href="{{ url_for('vehicles') }}" class="btn btn-outline-primary w-100 mb-3">
+                <i class="bi bi-truck"></i> Manage Vehicles
+            </a>
+
+            <a href="{{ url_for('fuel_records') }}" class="btn btn-outline-primary w-100 mb-3">
+                <i class="bi bi-fuel-pump"></i> Add Fuel Details
+            </a>
+
+            <a href="{{ url_for('fuel_analysis') }}" class="btn btn-outline-primary w-100 mb-3">
+                <i class="bi bi-bar-chart"></i> View Analysis
+            </a>
+
+            <a href="{{ url_for('reports') }}" class="btn btn-outline-primary w-100">
+                <i class="bi bi-file-earmark-pdf"></i> View Reports
+            </a>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
