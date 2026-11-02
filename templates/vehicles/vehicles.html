@@ -1,0 +1,118 @@
+
+{% extends "base.html" %}
+
+{% block title %}Vehicles - FuelTrack{% endblock %}
+
+{% block content %}
+
+<div class="mb-4">
+    <h2 class="page-heading">Vehicle Management</h2>
+    <p class="page-subtitle">Add and manage your registered vehicles.</p>
+</div>
+
+<div class="row g-4">
+
+    <div class="col-lg-4">
+        <div class="content-card">
+            <h5 class="fw-bold mb-4">Add New Vehicle</h5>
+
+            <form method="POST" action="{{ url_for('vehicles') }}">
+
+                <div class="mb-3">
+                    <label class="form-label">Vehicle Number</label>
+                    <input type="text" name="vehicle_number"
+                           class="form-control"
+                           placeholder="AP 39 AB 1234" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Vehicle Name</label>
+                    <input type="text" name="vehicle_name"
+                           class="form-control"
+                           placeholder="Honda Activa" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Vehicle Type</label>
+                    <select name="vehicle_type" class="form-select" required>
+                        <option value="">Select Type</option>
+                        <option value="Bike">Bike</option>
+                        <option value="Car">Car</option>
+                        <option value="Truck">Truck</option>
+                        <option value="Bus">Bus</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Fuel Type</label>
+                    <select name="fuel_type" class="form-select" required>
+                        <option value="">Select Fuel</option>
+                        <option value="Petrol">Petrol</option>
+                        <option value="Diesel">Diesel</option>
+                        <option value="CNG">CNG</option>
+                        <option value="Electric">Electric</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-plus-circle"></i> Add Vehicle
+                </button>
+
+            </form>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="content-card">
+            <h5 class="fw-bold mb-4">Registered Vehicles</h5>
+
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Vehicle Number</th>
+                            <th>Vehicle Name</th>
+                            <th>Type</th>
+                            <th>Fuel</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for vehicle in vehicles %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ vehicle.vehicle_number }}</td>
+                            <td>{{ vehicle.vehicle_name }}</td>
+                            <td>{{ vehicle.vehicle_type }}</td>
+                            <td>{{ vehicle.fuel_type }}</td>
+                            <td>
+                                <form method="POST"
+                                      action="{{ url_for('delete_vehicle', vehicle_id=vehicle.id) }}"
+                                      onsubmit="return confirm('Delete this vehicle?');">
+                                    <button type="submit"
+                                            class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i> Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-secondary">
+                                No vehicles added yet.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
